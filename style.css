@@ -1,0 +1,169 @@
+/*
+  Ruhepol – Technik-Test, Gestaltung
+  Farben und Maße aus design.md (Farbwelt 1, Ruhiges Nachtblau).
+  Schrift: Manrope kommt in Bauschritt 2 als lokale Datei dazu.
+  Bis dahin die Systemschrift – es wird keine Schrift aus dem Netz geladen.
+*/
+:root {
+  --bg-1: #0D1522;
+  --bg-2: #152238;
+  --bg-3: #1B2B47;
+  --text: #EAF0F8;
+  --text-gedaempft: #9DAFC9;
+  --label: #A7B8D1;
+  --akzent: #E9B872;
+  --akzent-hell: #F6D9A8;
+  --akzent-dunkel: #C58B3F;
+  --auf-akzent: #241604;
+  --zweit: #8FB4E3;
+  --koralle-text: #F4A299;
+  --koralle-flaeche: rgba(240, 110, 96, .14);
+  --koralle-rand: rgba(240, 139, 128, .35);
+  --haarlinie: rgba(234, 240, 248, .10);
+  --flaeche: rgba(234, 240, 248, .05);
+  --inaktiv: #55688A;
+  --schrift: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--schrift);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  background: linear-gradient(175deg, var(--bg-1) 0%, var(--bg-2) 60%, var(--bg-3) 100%) fixed;
+  background-color: var(--bg-1);
+}
+
+.seite {
+  max-width: 480px;
+  margin: 0 auto;
+  /* Platz für Notch oben und den festen Hilfe-Knopf unten */
+  padding: calc(env(safe-area-inset-top) + 24px) 20px calc(env(safe-area-inset-bottom) + 110px);
+}
+
+.wortmarke { font-size: 14px; letter-spacing: .16em; font-weight: 600; color: var(--label); margin: 0 0 8px; }
+h1 { font-size: 26px; font-weight: 700; margin: 0 0 8px; }
+.gedaempft { color: var(--text-gedaempft); font-size: 15px; margin: 8px 0 14px; }
+.gedaempft b { color: var(--text); font-weight: 600; }
+
+section { padding: 22px 0 8px; border-top: 1px solid var(--haarlinie); margin-top: 18px; }
+.kopf + section { border-top: 0; }
+
+.label {
+  font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--label); font-weight: 600; margin: 0 0 10px;
+}
+.unterlabel { font-size: 15px; font-weight: 600; margin: 26px 0 0; }
+
+/* Zustandsliste: ruhige Zeilen mit Haarlinien statt Kacheln */
+.liste { margin: 0 0 14px; padding: 0; }
+.zeile {
+  display: flex; justify-content: space-between; gap: 16px; align-items: baseline;
+  min-height: 48px; padding: 12px 0; border-bottom: 1px solid var(--haarlinie);
+}
+.zeile dt { color: var(--text-gedaempft); font-size: 15px; }
+.zeile dd { margin: 0; font-weight: 600; font-size: 15px; text-align: right; }
+.gut { color: #A9D8B0; }
+.schlecht { color: var(--koralle-text); }
+
+.hinweis {
+  background: var(--flaeche); border-radius: 16px; padding: 14px 16px;
+  font-size: 15px; color: var(--text); margin: 0 0 14px;
+}
+
+/* Knöpfe: mindestens 54 px hoch, mit zitternden Händen gut zu treffen */
+.pill {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; min-height: 54px; padding: 0 22px; border-radius: 27px;
+  font: inherit; font-size: 16px; font-weight: 700; cursor: pointer;
+  transition: transform .15s ease, opacity .2s ease;
+  margin: 0 0 12px;
+}
+.pill:active { transform: scale(.98); }
+.pill:disabled { opacity: .45; cursor: default; }
+.pill--akzent {
+  border: 0; color: var(--auf-akzent);
+  background: radial-gradient(circle at 50% 35%, var(--akzent-hell) 0%, var(--akzent) 62%, var(--akzent-dunkel) 100%);
+}
+.pill--rand { background: transparent; color: var(--text); border: 1px solid rgba(234, 240, 248, .35); }
+.knopfreihe { display: flex; gap: 12px; }
+.knopfreihe .pill { flex: 1; padding: 0 12px; white-space: nowrap; }
+
+.textknopf {
+  background: none; border: 0; color: var(--zweit); font: inherit; font-size: 15px; font-weight: 600;
+  min-height: 44px; padding: 0; cursor: pointer;
+}
+
+.status { font-size: 15px; margin: 4px 0 10px; min-height: 1.5em; }
+
+:focus-visible { outline: 2px solid var(--zweit); outline-offset: 3px; }
+
+/* Ja/Nein-Frage */
+.frage { display: flex; align-items: center; gap: 12px; margin: 10px 0 6px; flex-wrap: wrap; }
+.frage-text { flex: 1 1 100%; font-weight: 600; font-size: 15px; }
+.frage button {
+  flex: 1; min-height: 48px; border-radius: 24px; font: inherit; font-size: 16px; font-weight: 600;
+  background: transparent; color: var(--text); border: 1px solid #2C3A55; cursor: pointer;
+}
+.frage button[aria-pressed="true"] { background: var(--flaeche); border-color: var(--akzent); color: var(--akzent); }
+
+/* Auswahl Testton / Aufnahme */
+.auswahl { display: flex; gap: 8px; margin: 0 0 12px; }
+.auswahl-pill {
+  flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 46px; padding: 0 6px; border-radius: 23px; border: 1px solid #2C3A55;
+  font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;
+}
+.auswahl-pill:has(input:checked) { border-color: var(--akzent); color: var(--akzent); }
+.auswahl-pill input { accent-color: var(--akzent); width: 18px; height: 18px; margin: 0; }
+
+/* Protokoll */
+.protokoll summary { min-height: 44px; display: flex; align-items: center; color: var(--zweit); font-weight: 600; cursor: pointer; }
+.protokoll ol { padding-left: 0; list-style: none; margin: 6px 0 10px; font-size: 13.5px; color: var(--text-gedaempft); }
+.protokoll li { padding: 6px 0; border-bottom: 1px solid var(--haarlinie); }
+
+/* Hilfe */
+.anruf {
+  display: flex; align-items: center; min-height: 54px; padding: 0 18px; margin: 0 0 10px;
+  border-radius: 16px; background: var(--flaeche); color: var(--text); text-decoration: none; font-weight: 600;
+}
+.anruf--notruf { background: var(--koralle-flaeche); border: 1px solid var(--koralle-rand); color: var(--koralle-text); }
+
+.hilfe-pill {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom) + 14px);
+  width: calc(100% - 40px); max-width: 440px; min-height: 54px; border-radius: 27px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  /* Koralle 14 % auf Nachtblau, als feste Farbe: undurchsichtig, damit kein Text durchscheint */
+  background: #2D222B;
+  border: 1px solid var(--koralle-rand); color: var(--koralle-text);
+  font-size: 14px; font-weight: 600; text-decoration: none;
+}
+
+/* Abgedunkelter Bildschirm: große Stopp-Fläche, Hilfe-Knopf bleibt darüber */
+.dunkel { position: fixed; inset: 0; z-index: 10; background: #000; }
+.dunkel[hidden] { display: none; }
+.dunkel-stopp {
+  position: absolute; left: 0; right: 0; top: 0;
+  bottom: calc(env(safe-area-inset-bottom) + 84px); /* endet über dem Hilfe-Knopf */
+  width: 100%; background: transparent; border: 0;
+  color: #6E7B96; /* gerade noch 4.5:1 auf Schwarz */ font: inherit; font-size: 15px; cursor: pointer;
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 24px;
+}
+.hilfe-pill { z-index: 20; }
+
+.version { color: var(--inaktiv); letter-spacing: .08em; font-weight: 500; }
+.ergebnis {
+  white-space: pre-wrap; word-break: break-word; font-size: 12.5px; color: var(--text);
+  background: var(--flaeche); border-radius: 16px; padding: 14px; user-select: text; -webkit-user-select: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

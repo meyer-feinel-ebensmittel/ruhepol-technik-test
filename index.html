@@ -1,0 +1,151 @@
+<!doctype html>
+<!--
+  Ruhepol – Technik-Nachweis (Bauschritt 1 des Arbeitsplans)
+
+  Diese Seite ist KEINE Ruhepol-Oberfläche, sondern ein Prüfstand.
+  Sie beantwortet am echten iPhone fünf Fragen:
+    1. Geht Aufnehmen → Speichern → Abspielen?
+    2. Bleibt die Aufnahme nach dem Schließen der App erhalten?
+    3. Gibt das System dauerhaften Speicher frei (navigator.storage.persist)?
+    4. Öffnet die App ohne Internet (Service Worker)?
+    5. Was passiert mit dem Ton bei abgedunkeltem und bei gesperrtem Bildschirm?
+
+  Feste Regel: keine Verbindung nach außen. Die Content-Security-Policy unten
+  erlaubt nur Dateien von der eigenen Adresse ('self') und lokale blob:-Töne.
+-->
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self' blob:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#0D1522">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ruhepol Test">
+  <title>Ruhepol · Technik-Test</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="icon" type="image/png" href="icon-180.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="test.js" defer></script>
+</head>
+<body>
+  <main class="seite">
+    <header class="kopf">
+      <p class="wortmarke">RUHEPOL <span class="version" id="version"></span></p>
+      <h1>Technik-Test</h1>
+      <p class="gedaempft">Fünf Minuten am iPhone. Gehe von oben nach unten. Bei jedem Punkt tippst du am Ende auf <b>Ja</b> oder <b>Nein</b>.</p>
+    </header>
+
+    <!-- Zustand: wird von test.js automatisch ausgefüllt -->
+    <section aria-labelledby="t-zustand">
+      <h2 id="t-zustand" class="label">Zustand</h2>
+      <dl class="liste" id="zustand">
+        <div class="zeile"><dt>Als App geöffnet</dt><dd id="z-app">…</dd></div>
+        <div class="zeile"><dt>Internet</dt><dd id="z-netz">…</dd></div>
+        <div class="zeile"><dt>Offline-Kopie</dt><dd id="z-sw">…</dd></div>
+        <div class="zeile"><dt>Dauerhafter Speicher</dt><dd id="z-persist">…</dd></div>
+        <div class="zeile"><dt>Speicher belegt</dt><dd id="z-belegt">…</dd></div>
+        <div class="zeile"><dt>Gerät</dt><dd id="z-geraet">…</dd></div>
+      </dl>
+      <p class="hinweis" id="installhinweis" hidden>
+        Noch im Safari-Fenster. Für den richtigen Test: unten auf <b>Teilen</b> tippen →
+        <b>Zum Home-Bildschirm</b> → <b>Hinzufügen</b>. Dann Ruhepol Test vom Home-Bildschirm öffnen.
+      </p>
+      <button type="button" class="pill pill--rand" id="btn-persist">Dauerhaften Speicher anfragen</button>
+    </section>
+
+    <!-- Test 1 und 2: Aufnahme -->
+    <section aria-labelledby="t-aufnahme">
+      <h2 id="t-aufnahme" class="label">1 · Aufnehmen, speichern, abspielen</h2>
+      <p class="gedaempft">Sprich zehn Sekunden, zum Beispiel: „Ich bin da. Atme ruhig.“</p>
+      <div class="knopfreihe">
+        <button type="button" class="pill pill--akzent" id="btn-aufnahme">Aufnahme starten</button>
+        <button type="button" class="pill pill--rand" id="btn-abspielen" disabled>Abspielen</button>
+      </div>
+      <p class="status" id="aufnahme-status" role="status" aria-live="polite">Noch keine Aufnahme gespeichert.</p>
+      <button type="button" class="textknopf" id="btn-loeschen" hidden>Aufnahme löschen</button>
+      <div class="frage" data-frage="aufnahme" data-text="Aufnahme klar zu hören?"></div>
+      <h3 class="unterlabel">2 · Bleibt sie erhalten?</h3>
+      <p class="gedaempft">Wische die App ganz weg (vom unteren Rand hochziehen und wegschieben). Öffne sie neu vom Home-Bildschirm. Steht oben bei „Aufnahme“ noch dein Datum?</p>
+      <div class="frage" data-frage="erhalten" data-text="Aufnahme nach Neustart noch da?"></div>
+      <p class="gedaempft">Tippe jetzt noch einmal auf <b>Neu aufnehmen</b>. Fragt das iPhone wieder nach dem Mikrofon?</p>
+      <div class="frage" data-frage="mikrofon" data-text="Mikrofon-Frage kam nach Neustart erneut?"></div>
+    </section>
+
+    <!-- Test 3: ohne Internet -->
+    <section aria-labelledby="t-offline">
+      <h2 id="t-offline" class="label">3 · Ohne Internet</h2>
+      <p class="gedaempft">Schalte den Flugmodus ein (WLAN auch aus). Wische die App weg und öffne sie neu. Öffnet sie, und spielt die Aufnahme?</p>
+      <div class="frage" data-frage="offline" data-text="Öffnet und spielt im Flugmodus?"></div>
+    </section>
+
+    <!-- Test 4 und 5: Ton bei abgedunkeltem / gesperrtem Bildschirm -->
+    <section aria-labelledby="t-ton">
+      <h2 id="t-ton" class="label">4 · Ton bei dunklem Bildschirm</h2>
+      <p class="gedaempft">„Wechsel“ ist der wichtigste Test: Zwei leise Töne lösen sich alle zehn Sekunden ab – so wie später Stimme und Klang. Mach die Tests 4 und 5 zuerst mit „Wechsel“, danach gern mit den anderen.</p>
+      <div class="auswahl" role="radiogroup" aria-label="Was soll laufen?">
+        <label class="auswahl-pill"><input type="radio" name="quelle" value="wechsel" checked> Wechsel</label>
+        <label class="auswahl-pill"><input type="radio" name="quelle" value="ton"> Ein Ton</label>
+        <label class="auswahl-pill"><input type="radio" name="quelle" value="aufnahme"> Aufnahme</label>
+      </div>
+      <button type="button" class="pill pill--akzent" id="btn-abdunkeln">Ton starten und abdunkeln</button>
+      <p class="gedaempft">Der Bildschirm wird fast schwarz und bleibt an. Lass ihn eine Minute so liegen. Tippe dann auf die schwarze Fläche, um zu beenden.</p>
+      <div class="frage" data-frage="dunkel" data-text="Ton lief beim Abdunkeln durch?"></div>
+
+      <h3 class="unterlabel">5 · Ton bei gesperrtem Bildschirm</h3>
+      <button type="button" class="pill pill--akzent" id="btn-tonsperre">Ton starten</button>
+      <p class="gedaempft">Drücke jetzt die Seitentaste (Bildschirm aus). Warte eine Minute und hör hin. Entsperre dann und tippe hier auf Ja oder Nein.</p>
+      <button type="button" class="pill pill--rand" id="btn-tonstopp">Ton anhalten</button>
+      <div class="frage" data-frage="gesperrt" data-text="Ton lief bei gesperrtem Bildschirm weiter?"></div>
+      <div class="frage" data-frage="wechselgesperrt" data-text="Bei „Wechsel“: Wechselten die Töne auch gesperrt?"></div>
+
+      <h3 class="unterlabel">6 · Stummschalter und Lautsprecher</h3>
+      <p class="gedaempft">Schalte den Stummschalter an der Seite ein (oder die Aktionstaste auf „Stumm“). Tippe auf „Ton starten“. Hörst du etwas?</p>
+      <div class="frage" data-frage="stumm" data-text="Ton hörbar trotz Stummschalter?"></div>
+      <p class="gedaempft">Stummschalter wieder aus. Mach eine kurze Aufnahme und starte danach den Ton. Kommt er laut aus dem Lautsprecher – nicht leise wie beim Telefonieren?</p>
+      <div class="frage" data-frage="lautsprecher" data-text="Nach der Aufnahme normal laut aus dem Lautsprecher?"></div>
+    </section>
+
+    <!-- Ergebnis -->
+    <section aria-labelledby="t-ergebnis">
+      <h2 id="t-ergebnis" class="label">Ergebnis</h2>
+      <p class="gedaempft">Tippe auf „Ergebnis kopieren“ und füge den Text in die Nachricht an Claude ein. Es stehen keine Aufnahmen darin, nur die Antworten und das Protokoll.</p>
+      <button type="button" class="pill pill--akzent" id="btn-kopieren">Ergebnis kopieren</button>
+      <p class="status" id="kopier-status" role="status" aria-live="polite"></p>
+      <pre class="ergebnis" id="ergebnis-text" hidden></pre>
+      <details class="protokoll">
+        <summary>Protokoll ansehen</summary>
+        <ol id="protokoll" reversed></ol>
+        <button type="button" class="textknopf" id="btn-protokoll-leeren">Protokoll und Antworten leeren</button>
+      </details>
+    </section>
+
+    <!-- Hilfe-Knopf: feste Regel, auf jedem Bildschirm -->
+    <section id="hilfe" class="hilfe" aria-labelledby="t-hilfe">
+      <h2 id="t-hilfe" class="label">Hilfe</h2>
+      <a class="anruf anruf--notruf" href="tel:112">Notruf 112</a>
+      <a class="anruf" href="tel:08001110111">Telefonseelsorge 0800 111 0 111</a>
+      <a class="anruf" href="tel:08001110222">Telefonseelsorge 0800 111 0 222</a>
+      <a class="anruf" href="tel:116123">Europaweit 116 123</a>
+    </section>
+  </main>
+
+  <a class="hilfe-pill" href="#hilfe">
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.6"/><path d="M5.6 5.6l3.9 3.9M14.5 14.5l3.9 3.9M18.4 5.6l-3.9 3.9M9.5 14.5l-3.9 3.9"/></svg>
+    Hilfe · Notruf 112 · Telefonseelsorge
+  </a>
+
+  <!--
+    Abgedunkelter Bildschirm (Vorgeschmack auf den Fahrmodus).
+    Die große Fläche beendet das Abdunkeln. Der Hilfe-Knopf liegt per z-index
+    darüber und bleibt sichtbar und bedienbar (feste Regel, Befund Codex Nr. 3).
+  -->
+  <div class="dunkel" id="dunkel" hidden>
+    <button type="button" class="dunkel-stopp" id="dunkel-stopp">Tippen zum Beenden</button>
+  </div>
+</body>
+</html>
